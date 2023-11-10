@@ -6,21 +6,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 
-import android.app.Activity;
-import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -40,7 +37,6 @@ public class RegistroActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro2);
-        Button btnregistro = findViewById(R.id.btnRegister);
 
 
       cedula = findViewById(R.id.numCedula);
@@ -55,6 +51,8 @@ public class RegistroActivity2 extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             // El permiso ya está concedido
             // Puedes realizar la acción que requiere el permiso aquí
+            Toast.makeText(this, "Permiso concedido", Toast.LENGTH_LONG).show();
+
 
         } else {
             // El permiso no está concedido, solicítalo
@@ -116,7 +114,7 @@ public class RegistroActivity2 extends AppCompatActivity {
         info = info + nombre.getText() + ";";
         info = info + apellido.getText()+ ";";
         info = info + edad.getText() + ";";
-        info = info + String.valueOf(rating).toString() + "\n";
+        info = info + String.valueOf(rating) + "\n";
 
         int estadoSD = StateSD();
         String inf = "";
@@ -140,7 +138,7 @@ public class RegistroActivity2 extends AppCompatActivity {
             }catch (Exception ex)
             {
                 Toast.makeText(v.getContext(), "Error al guardar", Toast.LENGTH_LONG).show();
-
+                //probando git
             }
 
         }
