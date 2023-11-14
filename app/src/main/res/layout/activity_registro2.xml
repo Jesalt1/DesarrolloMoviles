@@ -92,13 +92,37 @@
         android:id="@+id/btnMostrar"
         android:layout_width="301dp"
         android:layout_height="40dp"
-        android:onClick="leerArchivo"
+        android:onClick="BuscarRegistro"
         android:text="Mostrar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.816" />
+        app:layout_constraintVertical_bias="0.784" />
+
+    <Button
+        android:id="@+id/btnModificar"
+        android:layout_width="301dp"
+        android:layout_height="40dp"
+        android:onClick="EditarRegistro"
+        android:text="Modificar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.862" />
+
+    <Button
+        android:id="@+id/btnEliminar"
+        android:layout_width="301dp"
+        android:layout_height="40dp"
+        android:onClick="EliminarRegistro"
+        android:text="Eliminar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.94" />
 
     <CheckBox
         android:id="@+id/chkPoliticaSeg"

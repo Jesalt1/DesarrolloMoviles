@@ -7,11 +7,16 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -111,7 +116,7 @@ public class RegistroActivity2 extends AppCompatActivity {
 
         String info;
         info = cedula.getText().toString() + ";";
-        info = info + nombre.getText() + ";";
+        info = info + nombre.getText().toString() + ";";
         info = info + apellido.getText()+ ";";
         info = info + edad.getText() + ";";
         info = info + String.valueOf(rating) + "\n";
@@ -128,12 +133,31 @@ public class RegistroActivity2 extends AppCompatActivity {
                 writer.write(info.toString());
                 writer.close();
 
-                cedula.setText(null);
-                nombre.setText(null);
-                apellido.setText(null);
-                edad.setText(null);
+
 
                 Toast.makeText(v.getContext(), "Guardado con exito", Toast.LENGTH_LONG).show();
+
+                //GUARDAR EN BASE DE DATOS
+                DataBasePractice DBP = new DataBasePractice(v.getContext());
+                final SQLiteDatabase db = DBP.getWritableDatabase();
+                if(db!=null)
+                {
+                    ContentValues cv = new ContentValues();
+                    cv.put("Cedula", cedula.getText().toString());
+                    cv.put("Nombres", nombre.getText().toString());
+                    cv.put("Apellidos", apellido.getText().toString());
+                    cv.put("Edad", (String) edad.getText().toString());
+                    cv.put("Rating", String.valueOf(rating));
+
+                    db.insert("Usuarios", null, cv);
+
+                    Toast.makeText(v.getContext(), "Guardado con exito en base de datos", Toast.LENGTH_LONG).show();
+
+                    cedula.setText(null);
+                    nombre.setText(null);
+                    apellido.setText(null);
+                    edad.setText(null);
+                }
 
             }catch (Exception ex)
             {
@@ -142,6 +166,14 @@ public class RegistroActivity2 extends AppCompatActivity {
             }
 
         }
+        else
+        {
+
+        }
+
+
+
+
     }
 
     public void leerArchivo(View v) {
@@ -181,5 +213,99 @@ public class RegistroActivity2 extends AppCompatActivity {
             }
         }
     }
+
+    @SuppressLint("Range")
+    public void BuscarRegistro(View v)
+    {
+        EditText cedula = findViewById(R.id.numCedula);
+        DataBasePractice DBP = new DataBasePractice(v.getContext());
+        final SQLiteDatabase db = DBP.getReadableDatabase();
+        if(db!=null)
+        {
+            Cursor SQLQuery = db.rawQuery("SELECT * FROM Usuarios WHERE Cedula = '" + cedula.getText().toString() + "'", null);
+
+            if(SQLQuery != null)
+            {
+                SQLQuery.moveToFirst();
+
+
+                cedula.setText(SQLQuery.getString(SQLQuery.getColumnIndex("Cedula")).toString());
+                nombre.setText(SQLQuery.getString(SQLQuery.getColumnIndex("Nombres")).toString());
+                apellido.setText(SQLQuery.getString(SQLQuery.getColumnIndex("Apellidos")).toString());
+                edad.setText(SQLQuery.getString(SQLQuery.getColumnIndex("Edad")).toString());
+
+                float ratingValue = Float.parseFloat(SQLQuery.getString(SQLQuery.getColumnIndex("Rating")).toString());
+
+                // Establecer el valor del RatingBar
+                ratingbart_tmp.setRating(ratingValue);
+
+
+            }else
+            {
+                Toast.makeText(v.getContext(), "Usuario no existe", Toast.LENGTH_LONG).show();
+
+            }
+
+        }
+
+    }
+
+    public void EditarRegistro(View v) {
+        EditText cedula = findViewById(R.id.numCedula);
+        DataBasePractice DBP = new DataBasePractice(v.getContext());
+        final SQLiteDatabase db = DBP.getWritableDatabase();
+        if (db != null) {
+            Cursor SQLQuery = db.rawQuery("SELECT * FROM Usuarios WHERE Cedula = '" + cedula.getText().toString() + "'", null);
+
+            if (db != null) {
+                // Verificar si la cédula existe antes de intentar modificar
+                Cursor cursor = db.rawQuery("SELECT * FROM Usuarios WHERE Cedula = '" + cedula.getText().toString() + "'", null);
+
+                if (cursor.moveToFirst()) {
+                    // La cédula existe, proceder con la modificación
+                    ContentValues values = new ContentValues();
+                    values.put("Nombres", nombre.getText().toString());
+                    values.put("Apellidos", apellido.getText().toString());
+                    values.put("Edad", edad.getText().toString());
+                    values.put("Rating", String.valueOf(ratingbart_tmp.getRating()));
+
+                    db.update("Usuarios", values, "Cedula = ?", new String[]{cedula.getText().toString()});
+
+                    Toast.makeText(v.getContext(), "Registro modificado con éxito", Toast.LENGTH_LONG).show();
+                } else {
+                    // La cédula no existe
+                    Toast.makeText(v.getContext(), "No se encontró el registro con la cédula proporcionada", Toast.LENGTH_LONG).show();
+                }
+
+                // Cerrar el cursor después de su uso
+                cursor.close();
+            }
+
+        }
+    }
+
+    public void EliminarRegistro(View v) {
+        EditText cedula = findViewById(R.id.numCedula);
+        DataBasePractice DBP = new DataBasePractice(v.getContext());
+        final SQLiteDatabase db = DBP.getWritableDatabase();  // Usa getWritableDatabase para permitir operaciones de escritura
+
+        if (db != null) {
+            // Verificar si la cédula existe antes de intentar eliminar
+            Cursor cursor = db.rawQuery("SELECT * FROM Usuarios WHERE Cedula = '" + cedula.getText().toString() + "'", null);
+
+            if (cursor.moveToFirst()) {
+                // La cédula existe, proceder con la eliminación
+                db.delete("Usuarios", "Cedula = ?", new String[]{cedula.getText().toString()});
+                Toast.makeText(v.getContext(), "Registro eliminado con éxito", Toast.LENGTH_LONG).show();
+            } else {
+                // La cédula no existe
+                Toast.makeText(v.getContext(), "No se encontró el registro con la cédula proporcionada", Toast.LENGTH_LONG).show();
+            }
+
+            // Cerrar el cursor después de su uso
+            cursor.close();
+        }
+    }
+
 
 }
